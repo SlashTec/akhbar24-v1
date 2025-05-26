@@ -1,0 +1,16 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+<suite name="Akhbar24 Test Suite" verbose="1" parallel="false">
+    <test name="All Test Classes">
+        <classes>
+            <class name="com.akhbar24.tests.LaunchAppTest"/>
+            <class name="com.akhbar24.tests.LoginTest"/>
+            <class name="com.akhbar24.tests.LogoutTest"/>
+            <class name="com.akhbar24.tests.OpenArticleTest"/>
+            <class name="com.akhbar24.tests.SearchTest"/>
+            <class name="com.akhbar24.tests.AddToFavoritesTest"/>
+            <class name="com.akhbar24.tests.VideoSectionTest"/>
+            <class name="com.akhbar24.tests.ContactUsTest"/>
+            <class name="com.akhbar24.tests.TemperatureTest"/>
+        </classes>
+    </test>
+</suite>
