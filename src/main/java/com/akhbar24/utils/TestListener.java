@@ -26,6 +26,38 @@ public class TestListener implements ITestListener {
         System.out.println("Test Passed: " + result.getName());
     }
 
+
+
+
+    @Override
+    public void onTestFailure(ITestResult result) {
+        try {
+            if (BaseTest.driver == null) {
+                System.err.println("Driver is null. Cannot capture screenshot.");
+                return;
+            }
+
+            // 📁 إنشاء مجلد بناءً على رقم الـ Build من Jenkins
+            String buildNumber = System.getenv("BUILD_NUMBER");
+            if (buildNumber == null) buildNumber = "manual";  // fallback لو ما شغّلت من Jenkins
+
+            String timestamp = new SimpleDateFormat("HHmmss").format(new Date());
+            File screenshotsDir = new File("screenshots/" + buildNumber);
+            screenshotsDir.mkdirs();
+            File srcFile = ((TakesScreenshot) BaseTest.driver).getScreenshotAs(OutputType.FILE);
+            File destFile = new File(screenshotsDir, "FAILED_" + result.getName() + "_" + timestamp + ".png");
+            FileUtils.copyFile(srcFile, destFile);
+
+            System.out.println("📸 Screenshot saved at: " + destFile.getAbsolutePath());
+
+            attachScreenshot(((TakesScreenshot) BaseTest.driver).getScreenshotAs(OutputType.BYTES));
+
+        } catch (Exception e) {
+            System.err.println("❌ Error while taking screenshot: " + e.getMessage());
+        }
+    }
+
+/*
     @Override
     public void onTestFailure(ITestResult result) {
         try {
@@ -50,7 +82,7 @@ public class TestListener implements ITestListener {
         } catch (Exception e) {
             System.err.println("❌ Error while taking screenshot: " + e.getMessage());
         }
-    }
+    }*/
 
     @Attachment(value = "📸 Screenshot on Failure", type = "image/png")
     public byte[] attachScreenshot(byte[] screenshotBytes) {
