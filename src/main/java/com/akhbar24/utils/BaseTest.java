@@ -1,5 +1,6 @@
 package com.akhbar24.utils;
 
+import io.appium.java_client.AppiumBy;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.options.UiAutomator2Options;
@@ -20,7 +21,8 @@ public class BaseTest {
 
     public static AppiumDriver driver;
 
-    @BeforeMethod
+
+    @BeforeClass
     public void setUp() throws Exception {
         UiAutomator2Options options = new UiAutomator2Options();
         options.setPlatformName("Android");
@@ -28,21 +30,21 @@ public class BaseTest {
         options.setAutomationName("UiAutomator2");
         options.setApp("C:/Users/user/Downloads/app-release (6).apk");
         options.setAppWaitDuration(Duration.ofSeconds(60));
-        options.setCapability("chromedriverAutodownload", true);
-        options.setCapability("autoGrantPermissions", true);
+        options.setAutoGrantPermissions(true);
 
-        URL serverURL = new URL("http://127.0.0.1:4723/wd/hub");
-        System.out.println("جاري إنشاء الجلسة وفتح التطبيق...");
+       URL serverURL = new URL("https://0979-82-212-126-176.ngrok-free.app/wd/hub");
+       //URL serverURL = new URL("http://127.0.0.1:4723/wd/hub");
+        System.out.println(" جاري إنشاء الجلسة...");
         driver = new AndroidDriver(serverURL, options);
-        System.out.println("تم فتح التطبيق بنجاح.");
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(20));
+        System.out.println(" تم إنشاء الجلسة بنجاح: " + driver.getSessionId());
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
     }
 
-    @AfterMethod
-    public void tearDown(ITestResult result) {
+    @AfterClass
+    public void tearDown() {
         if (driver != null) {
             driver.quit();
-            System.out.println("تم إنهاء جلسة Appium.");
+            System.out.println(" تم إنهاء الجلسة.");
         }
     }
 
@@ -50,4 +52,7 @@ public class BaseTest {
         return new WebDriverWait(driver, Duration.ofSeconds(20))
                 .until(ExpectedConditions.visibilityOfElementLocated(locator));
     }
+
+
+
 }

@@ -13,7 +13,7 @@ public class VideoSectionTest extends BaseTest {
 
     private void verifyUserIsLoggedIn() {
         boolean isHomeVisible = driver.getPageSource().contains("الرئيسية");
-        Assert.assertTrue(isHomeVisible, "❌ لم يتم عرض صفحة الرئيسية بعد تسجيل الدخول.");
+        Assert.assertTrue(isHomeVisible, " لم يتم عرض صفحة الرئيسية بعد تسجيل الدخول.");
 
         waitForElement(AppiumBy.accessibilityId("القائمة")).click();
         String userStatus = waitForElement(By.xpath("//android.view.View[@content-desc]"))
@@ -40,15 +40,15 @@ public class VideoSectionTest extends BaseTest {
             verifyUserIsLoggedIn();
 
             waitForElement(AppiumBy.accessibilityId("مرئيات")).click();
-            WebElement firstVideo = waitForElement(By.xpath("//android.widget.ScrollView/android.view.View[1]/android.widget.ImageView[1]"));
+            WebElement firstVideo = waitForElement(By.xpath("//android.widget.ScrollView/android.view.View[1]"));
             firstVideo.click();
 
             By videoIndicatorLocator = By.xpath("//android.view.View[contains(@content-desc, 'فيديو أخبار 24')]");
             WebElement freshVideoIndicator = waitForElement(videoIndicatorLocator);
-            Assert.assertTrue(freshVideoIndicator.isDisplayed(), "❌ الفيديو لم يظهر أو لم يبدأ التشغيل.");
+            Assert.assertTrue(freshVideoIndicator.isDisplayed(), " الفيديو لم يظهر أو لم يبدأ التشغيل.");
 
         } catch (Exception e) {
-            Assert.fail("❌ حدث خطأ أثناء اختبار المرئيات / الفيديو: " + e.getMessage());
+            Assert.fail(" حدث خطأ أثناء اختبار المرئيات / الفيديو: " + e.getMessage());
         }
     }
 }

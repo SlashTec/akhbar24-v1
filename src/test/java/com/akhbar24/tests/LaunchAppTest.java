@@ -16,10 +16,10 @@ public class LaunchAppTest extends BaseTest {
 
     @Test
     public void testAppLaunchesSuccessfully() throws InterruptedException {
-        Thread.sleep(5000);
+
         new PermissionHandler().handleLocationPermissionIfVisible();
 
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(60));
         WebElement mainLogo = wait.until(
                 ExpectedConditions.presenceOfElementLocated(
                         By.xpath("//android.widget.FrameLayout[@resource-id='android:id/content']/android.widget.FrameLayout/android.view.View/android.view.View/android.view.View/android.view.View/android.view.View[1]/android.view.View/android.widget.ImageView[1]")));

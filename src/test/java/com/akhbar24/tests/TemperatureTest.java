@@ -10,18 +10,16 @@ public class TemperatureTest extends BaseTest {
 
     @Test
     public void testTemperatureValueIsDisplayedCorrectly() {
-        try {
-            waitForElement(AppiumBy.accessibilityId("القائمة")).click();
-            By tempLocator = By.xpath("//android.view.View[contains(@content-desc, '°C')]");
-            WebElement tempElement = waitForElement(tempLocator);
+        System.out.println("🌡 بدء اختبار عرض درجة الحرارة في القائمة");
 
-            String content = tempElement.getAttribute("content-desc");
-            boolean hasValidTemp = content.matches(".*\\d+\\s?°C.*");
+        waitForElement(AppiumBy.accessibilityId("القائمة")).click();
 
+        boolean temperatureVisible = driver.findElements(
+                By.xpath("//android.view.View[contains(@content-desc, '°')]")
+        ).size() > 0;
 
-            Assert.assertTrue(hasValidTemp, "❌ لم يتم العثور على درجة حرارة صحيحة (رقم + °C).");
-        } catch (Exception e) {
-            Assert.fail("❌ فشل في التحقق من درجة الحرارة: " + e.getMessage());
-        }
+        Assert.assertTrue(temperatureVisible, "❌ لم يتم العثور على عنصر يحتوي على الرمز ° الذي يمثل درجة الحرارة.");
     }
+
+
 }

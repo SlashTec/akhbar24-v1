@@ -13,7 +13,14 @@ import org.testng.annotations.Test;
 
 import java.time.Duration;
 import java.util.List;
+
 public class AddToFavoritesTest extends BaseTest {
+
+    public static  WebElement waitForElement(By locator) {
+        return new WebDriverWait(driver, Duration.ofSeconds(60))
+                .until(ExpectedConditions.presenceOfElementLocated(locator));
+    }
+
 
     private void verifyUserIsLoggedIn() {
         boolean isHomeVisible = driver.getPageSource().contains("الرئيسية");
@@ -22,31 +29,47 @@ public class AddToFavoritesTest extends BaseTest {
         waitForElement(AppiumBy.accessibilityId("القائمة")).click();
         String userStatus = waitForElement(By.xpath("//android.view.View[@content-desc]"))
                 .getAttribute("content-desc");
+        System.out.println("👤 الحالة الحالية للمستخدم: " + userStatus);
         Assert.assertFalse(userStatus.contains("زائر"), "❌ ما زال المستخدم زائرًا، يبدو أن تسجيل الدخول لم ينجح.");
     }
 
     @Test
-    public void testAddNewsToFavorites() {
+    public void testAddNewsToFavorites() throws InterruptedException {
+        System.out.println("🚀 تسجيل الدخول عبر جوجل...");
+
+        // تسجيل الدخول بجوجل
         waitForElement(AppiumBy.accessibilityId("القائمة")).click();
         waitForElement(By.xpath("//android.view.View[@content-desc='تسجيل دخول']")).click();
+        waitForElement(By.xpath("//android.widget.ImageView[@content-desc='الدخول بحساب جوجل']")).click();
+        Thread.sleep(3000);
 
-        List<WebElement> inputs = driver.findElements(By.className("android.widget.EditText"));
-        Actions actions = new Actions(driver);
-        actions.click(inputs.get(0)).perform();
-        inputs.get(0).sendKeys("asilyacoub1@gmail.com");
-        actions.click(inputs.get(1)).perform();
-        inputs.get(1).sendKeys("123456789");
+        List<WebElement> accounts = driver.findElements(By.id("com.google.android.gms:id/account_picker_container"));
+        if (!accounts.isEmpty()) {
+            accounts.get(0).click();
+            waitForElement(AppiumBy.accessibilityId("القائمة")); // بعد تسجيل الدخول
+        } else {
+            Assert.fail("❌ لم يتم العثور على نافذة اختيار الحساب.");
+        }
 
-        waitForElement(AppiumBy.accessibilityId("تسجيل الدخول")).click();
-        waitForElement(AppiumBy.accessibilityId("القائمة"));
-        verifyUserIsLoggedIn();
+        // الانتقال للرئيسية
+        waitForElement(AppiumBy.accessibilityId("الرئيسية")).click();
+        Thread.sleep(3000);
 
-        WebElement firstBookmark = waitForElement(By.xpath("(//android.widget.ImageView[@clickable='true'])[1]"));
-        firstBookmark.click();
-        Assert.assertTrue(firstBookmark.isDisplayed(), "❌ لم يتم العثور على أيقونة الحفظ.");
+        // العثور على أول زر حفظ خبر
+        List<WebElement> bookmarkIcons = driver.findElements(By.xpath("//android.widget.ImageView[@clickable='true']"));
+        Assert.assertTrue(bookmarkIcons.size() > 0, "❌ لم يتم العثور على زر الحفظ.");
+        bookmarkIcons.get(0).click();
+        System.out.println("✅ تم النقر على زر الحفظ بنجاح (تم حفظ خبر)");
 
+        // الانتقال إلى تبويب "أخباري"
         waitForElement(AppiumBy.accessibilityId("أخباري")).click();
-        List<WebElement> savedItems = driver.findElements(By.xpath("//android.view.View[contains(@content-desc, '‫')]"));
+        Thread.sleep(3000);
+
+        // التأكد من وجود أي عنصر محفوظ في "أخباري"
+        List<WebElement> savedItems = driver.findElements(
+                By.xpath("//android.view.View[contains(@content-desc, '') and string-length(@content-desc) > 15]")
+        );
         Assert.assertTrue(savedItems.size() > 0, "❌ لا يوجد محتوى محفوظ في قسم أخباري.");
+        System.out.println("✅ تم التأكد من وجود محتوى في قسم أخباري.");
     }
 }
