@@ -21,35 +21,32 @@ public class BaseTest {
 
     public static AppiumDriver driver;
 
-
     @BeforeMethod
     public void setUp() throws Exception {
+        // 🗂️ تحديد مسار ملف الـ APK
+        String appPath = System.getProperty("user.dir") + "/apps/app-release.apk";
+        File appFile = new File(appPath);
+        if (!appFile.exists()) {
+            throw new RuntimeException("❌ ملف APK غير موجود في المسار: " + appFile.getAbsolutePath());
+        }
+
+        // ⚙️ إعداد الخيارات
         UiAutomator2Options options = new UiAutomator2Options();
         options.setPlatformName("Android");
         options.setDeviceName("Pixel 7a");
         options.setAutomationName("UiAutomator2");
-        options.setApp("apps/app-release.apk");
-
-        // options.setApp(System.getProperty("user.dir") + "/apps/app-release.apk");
-        //String appPath = System.getProperty("user.dir") + "/apps/app-release.apk";
-       // File appFile = new File(appPath);
-        //if (!appFile.exists()) {
-         //   throw new RuntimeException("❌ ملف APK غير موجود في المسار: " + appFile.getAbsolutePath());
-       // }
-        options.setApp(appFile.getAbsolutePath());
-
-        options.setAppWaitDuration(Duration.ofSeconds(60));
-        options.setAutoGrantPermissions(true);
-
         options.setApp(appFile.getAbsolutePath());
         options.setAppWaitDuration(Duration.ofSeconds(60));
         options.setAutoGrantPermissions(true);
 
-     URL serverURL = new URL("https://0979-82-212-126-176.ngrok-free.app/wd/hub");
-     // URL serverURL = new URL("http://127.0.0.1:4723/wd/hub");
-        System.out.println(" جاري إنشاء الجلسة...");
+        // 🔗 عنوان Appium Server
+        URL serverURL = new URL("https://0979-82-212-126-176.ngrok-free.app/wd/hub");
+
+        // 🚀 بدء الجلسة
+        System.out.println("🟢 جاري إنشاء الجلسة...");
         driver = new AndroidDriver(serverURL, options);
-        System.out.println(" تم إنشاء الجلسة بنجاح: " + driver.getSessionId());
+        System.out.println("✅ تم إنشاء الجلسة بنجاح: " + driver.getSessionId());
+
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
     }
 
