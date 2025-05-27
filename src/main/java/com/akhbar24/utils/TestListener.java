@@ -10,6 +10,8 @@ import org.testng.ITestResult;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -26,9 +28,6 @@ public class TestListener implements ITestListener {
         System.out.println("Test Passed: " + result.getName());
     }
 
-
-
-
     @Override
     public void onTestFailure(ITestResult result) {
         try {
@@ -37,25 +36,44 @@ public class TestListener implements ITestListener {
                 return;
             }
 
-            // 📁 إنشاء مجلد بناءً على رقم الـ Build من Jenkins
+            // ✅ رقم الـ Build (إن وجد من Jenkins)
             String buildNumber = System.getenv("BUILD_NUMBER");
-            if (buildNumber == null) buildNumber = "manual";  // fallback لو ما شغّلت من Jenkins
+            if (buildNumber == null) buildNumber = "manual";
 
+            // ✅ إنشاء مجلد وحفظ الصورة محليًا
             String timestamp = new SimpleDateFormat("HHmmss").format(new Date());
             File screenshotsDir = new File("screenshots/" + buildNumber);
             screenshotsDir.mkdirs();
+
             File srcFile = ((TakesScreenshot) BaseTest.driver).getScreenshotAs(OutputType.FILE);
             File destFile = new File(screenshotsDir, "FAILED_" + result.getName() + "_" + timestamp + ".png");
             FileUtils.copyFile(srcFile, destFile);
-
             System.out.println("📸 Screenshot saved at: " + destFile.getAbsolutePath());
 
-            attachScreenshot(((TakesScreenshot) BaseTest.driver).getScreenshotAs(OutputType.BYTES));
+            // ✅ إرفاق الصورة داخل تقرير Allure
+            byte[] screenshotBytes = ((TakesScreenshot) BaseTest.driver).getScreenshotAs(OutputType.BYTES);
+            attachScreenshot(screenshotBytes);
+
+            // ✅ إرفاق Stack Trace داخل Allure
+            saveStackTrace(result.getThrowable());
 
         } catch (Exception e) {
             System.err.println("❌ Error while taking screenshot: " + e.getMessage());
         }
     }
+
+
+
+
+    @Attachment(value = "📄 Stack Trace", type = "text/plain")
+    public String saveStackTrace(Throwable throwable) {
+        StringWriter sw = new StringWriter();
+        throwable.printStackTrace(new PrintWriter(sw));
+        return sw.toString();
+    }
+
+
+
 
 /*
     @Override
@@ -88,6 +106,13 @@ public class TestListener implements ITestListener {
     public byte[] attachScreenshot(byte[] screenshotBytes) {
         return screenshotBytes;
     }
+
+
+    @Attachment(value = "📸 Screenshot on Failure", type = "image/png")
+    public byte[] saveScreenshot(byte[] screenshot) {
+        return screenshot;
+    }
+
 
 
     @Attachment(value = "Screenshot", type = "image/png")

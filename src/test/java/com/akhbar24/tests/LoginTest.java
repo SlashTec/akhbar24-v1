@@ -155,7 +155,7 @@ public class LoginTest extends BaseTest {
 
     }
 
-    @Test(priority = 7)
+   /* @Test(priority = 7)
     public void successfulFacebookLogin() throws InterruptedException {
 
         waitForElement(AppiumBy.accessibilityId("القائمة")).click();
@@ -172,13 +172,71 @@ public class LoginTest extends BaseTest {
             tap.addAction(finger.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(), x, y));
             tap.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
             tap.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
-            driver.perform(Arrays.asList(tap));
+
+            try {
+                driver.perform(Arrays.asList(tap));
+                System.out.println("✅ تم الضغط على زر 'متابعة باسم QA' بنجاح");
+            } catch (Exception e) {
+                System.out.println("❌ فشل تنفيذ النقرة: " + e.getMessage());
+            }
+
+            Thread.sleep(8000);
+
+            try {
+                verifyUserIsLoggedIn();
+            } catch (Exception e) {
+                System.out.println("❌ فشل التحقق من نجاح تسجيل الدخول: " + e.getMessage());
+            }
+
+        }
+
+           /* driver.perform(Arrays.asList(tap));
             Thread.sleep(8000);
             System.out.println("✅ تم الضغط على زر 'متابعة باسم QA' بنجاح");
             Thread.sleep(3000);
             verifyUserIsLoggedIn();
         } catch (Exception e) {
             System.out.println("❌ فشل الضغط على زر المتابعة: " + e.getMessage());
+        }*/
+
+    @Test(priority = 7)
+    public void successfulFacebookLogin() throws InterruptedException {
+        // افتح القائمة واذهب إلى شاشة تسجيل الدخول
+        waitForElement(AppiumBy.accessibilityId("القائمة")).click();
+        waitForElement(By.xpath("//android.view.View[@content-desc='تسجيل دخول']")).click();
+        waitForElement(AppiumBy.accessibilityId("الدخول بحساب الفيسبوك")).click();
+
+        Thread.sleep(5000); // انتظار تحميل صفحة الفيسبوك
+
+        // المحاولة الأولى: تنفيذ النقر اليدوي على زر "متابعة باسم QA"
+        try {
+            int x = (42 + 1039) / 2;
+            int y = (1913 + 2021) / 2;
+
+            PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
+            Sequence tap = new Sequence(finger, 1);
+            tap.addAction(finger.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(), x, y));
+            tap.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+            tap.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+            driver.perform(Arrays.asList(tap));
+
+            System.out.println("✅ تم الضغط على زر 'متابعة باسم QA' بنجاح");
+        } catch (Exception e) {
+            System.out.println("❌ فشل الضغط على زر 'متابعة باسم QA': " + e.getMessage());
+            Assert.fail("فشل تنفيذ النقر اليدوي على زر المتابعة");
+        }
+
+        Thread.sleep(3000); // انتظار عودة التطبيق بعد المصادقة
+
+        // المحاولة الثانية: التحقق من أن المستخدم لم يعد زائرًا
+        try {
+            verifyUserIsLoggedIn(); // تتحقق من أن القائمة ظاهرة وأن المستخدم ليس زائر
+            System.out.println("✅ تسجيل الدخول عبر الفيسبوك تم بنجاح");
+        } catch (Exception e) {
+            System.out.println("❌ فشل التحقق من تسجيل الدخول بعد الضغط: " + e.getMessage());
+            Assert.fail("رغم تنفيذ النقر، لم يتم تسجيل الدخول بنجاح");
         }
     }
+
+
 }
