@@ -23,31 +23,21 @@ public class BaseTest {
 
     @BeforeMethod
     public void setUp() throws Exception {
-        // 🗂️ تحديد المسار الكامل لملف الـ APK بناءً على مكان المشروع في Jenkins
-        String appPath = System.getProperty("user.dir") + "/apps/app-release.apk";
-        File appFile = new File(appPath);
-        if (!appFile.exists()) {
-            throw new RuntimeException("❌ ملف APK غير موجود في المسار: " + appFile.getAbsolutePath());
-        }
-
         UiAutomator2Options options = new UiAutomator2Options();
         options.setPlatformName("Android");
         options.setDeviceName("Pixel 7a");
         options.setAutomationName("UiAutomator2");
-        options.setApp(appFile.getAbsolutePath());
+        options.setApp("C:/Users/user/Downloads/app-release (6).apk");
         options.setAppWaitDuration(Duration.ofSeconds(60));
         options.setAutoGrantPermissions(true);
 
         URL serverURL = new URL("https://0979-82-212-126-176.ngrok-free.app/wd/hub");
-
-        System.out.println("🟢 جاري إنشاء الجلسة...");
+        // URL serverURL = new URL("http://127.0.0.1:4723/wd/hub");
+        System.out.println(" جاري إنشاء الجلسة...");
         driver = new AndroidDriver(serverURL, options);
-        System.out.println("✅ تم إنشاء الجلسة بنجاح: " + driver.getSessionId());
-
+        System.out.println(" تم إنشاء الجلسة بنجاح: " + driver.getSessionId());
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
     }
-
-
 
 
     public static WebElement waitForElement(By locator) {
