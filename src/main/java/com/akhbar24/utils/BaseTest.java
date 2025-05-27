@@ -28,7 +28,18 @@ public class BaseTest {
         options.setPlatformName("Android");
         options.setDeviceName("Pixel 7a");
         options.setAutomationName("UiAutomator2");
-        options.setApp("C:/Users/user/Downloads/app-release (6).apk");
+       // options.setApp(System.getProperty("user.dir") + "/apps/app-release.apk");
+        String appPath = System.getProperty("user.dir") + "/apps/app-release.apk";
+        File appFile = new File(appPath);
+        if (!appFile.exists()) {
+            throw new RuntimeException("❌ ملف APK غير موجود في المسار: " + appFile.getAbsolutePath());
+        }
+        options.setApp(appFile.getAbsolutePath());
+
+        options.setAppWaitDuration(Duration.ofSeconds(60));
+        options.setAutoGrantPermissions(true);
+
+        options.setApp(appFile.getAbsolutePath());
         options.setAppWaitDuration(Duration.ofSeconds(60));
         options.setAutoGrantPermissions(true);
 
