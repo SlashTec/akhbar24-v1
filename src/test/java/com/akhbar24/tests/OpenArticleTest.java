@@ -59,6 +59,33 @@ public class OpenArticleTest extends BaseTest {
 
     @Test(priority = 2)
     public void testShareFunctionality() {
+        // ✅ تسجيل الدخول وفتح المقال
+        waitForElement(AppiumBy.accessibilityId("القائمة")).click();
+        waitForElement(By.xpath("//android.view.View[@content-desc='تسجيل دخول']")).click();
+
+        List<WebElement> inputs = driver.findElements(By.className("android.widget.EditText"));
+        Actions actions = new Actions(driver);
+        actions.click(inputs.get(0)).perform();
+        inputs.get(0).sendKeys("asilyacoub1@gmail.com");
+
+        actions.click(inputs.get(1)).perform();
+        inputs.get(1).sendKeys("123456789");
+
+        waitForElement(AppiumBy.accessibilityId("تسجيل الدخول")).click();
+        waitForElement(AppiumBy.accessibilityId("القائمة"));
+        verifyUserIsLoggedIn();
+
+        try {
+            waitForElement(AppiumBy.accessibilityId("الرئيسية")).click();
+        } catch (Exception e) {
+            System.out.println("⚠️ لم يتم العثور على زر الرئيسية، قد تكون فعلاً على الصفحة الرئيسية.");
+        }
+
+        WebElement firstArticle = waitForElement(
+                By.xpath("//android.widget.ScrollView/android.view.View/android.view.View/android.view.View[2]/android.view.View/android.view.View/android.view.View[1]"));
+        firstArticle.click();
+
+        // ✅ الآن نفذ المشاركة
         WebElement shareIcon = waitForElement(By.xpath("//android.widget.ScrollView/android.widget.ImageView[4]"));
         shareIcon.click();
 
@@ -66,4 +93,5 @@ public class OpenArticleTest extends BaseTest {
         String popupText = sharingPopupTitle.getText();
         Assert.assertTrue(popupText.contains("Sharing link"), "❌ نافذة المشاركة لم تظهر بالشكل المتوقع");
     }
+
 }
