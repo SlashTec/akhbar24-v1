@@ -30,37 +30,36 @@ public class TestListener implements ITestListener {
 
     @Override
     public void onTestFailure(ITestResult result) {
-        try {
-            if (BaseTest.driver == null) {
-                System.err.println("Driver is null. Cannot capture screenshot.");
-                return;
+        System.out.println("❌ Test Failed: " + result.getName());
+
+        if (BaseTest.driver != null) {
+            try {
+                // حفظ الصورة في ملف
+                String buildNumber = System.getenv("BUILD_NUMBER");
+                if (buildNumber == null) buildNumber = "manual";
+
+                String timestamp = new SimpleDateFormat("HHmmss").format(new Date());
+                File screenshotsDir = new File("screenshots/" + buildNumber);
+                screenshotsDir.mkdirs();
+
+                File srcFile = ((TakesScreenshot) BaseTest.driver).getScreenshotAs(OutputType.FILE);
+                File destFile = new File(screenshotsDir, "FAILED_" + result.getName() + "_" + timestamp + ".png");
+                FileUtils.copyFile(srcFile, destFile);
+                System.out.println("📸 Screenshot saved at: " + destFile.getAbsolutePath());
+
+                // ✅ إرفاق الصورة في Allure
+                byte[] screenshot = ((TakesScreenshot) BaseTest.driver).getScreenshotAs(OutputType.BYTES);
+                attachScreenshot(screenshot);
+
+                // ✅ إرفاق Stack trace
+                saveStackTrace(result.getThrowable());
+
+            } catch (Exception e) {
+                System.err.println("❌ Error while taking screenshot: " + e.getMessage());
             }
-
-            // ✅ رقم الـ Build (إن وجد من Jenkins)
-            String buildNumber = System.getenv("BUILD_NUMBER");
-            if (buildNumber == null) buildNumber = "manual";
-
-            // ✅ إنشاء مجلد وحفظ الصورة محليًا
-            String timestamp = new SimpleDateFormat("HHmmss").format(new Date());
-            File screenshotsDir = new File("screenshots/" + buildNumber);
-            screenshotsDir.mkdirs();
-
-            File srcFile = ((TakesScreenshot) BaseTest.driver).getScreenshotAs(OutputType.FILE);
-            File destFile = new File(screenshotsDir, "FAILED_" + result.getName() + "_" + timestamp + ".png");
-            FileUtils.copyFile(srcFile, destFile);
-            System.out.println("📸 Screenshot saved at: " + destFile.getAbsolutePath());
-
-            // ✅ إرفاق الصورة داخل تقرير Allure
-            byte[] screenshotBytes = ((TakesScreenshot) BaseTest.driver).getScreenshotAs(OutputType.BYTES);
-            attachScreenshot(screenshotBytes);
-
-            // ✅ إرفاق Stack Trace داخل Allure
-            saveStackTrace(result.getThrowable());
-
-        } catch (Exception e) {
-            System.err.println("❌ Error while taking screenshot: " + e.getMessage());
         }
     }
+
 
 
 
@@ -102,14 +101,15 @@ public class TestListener implements ITestListener {
         }
     }*/
 
-    @Attachment(value = "📸 Screenshot on Failure", type = "image/png")
-    public byte[] attachScreenshot(byte[] screenshotBytes) {
-        return screenshotBytes;
-    }
 
 
     @Attachment(value = "📸 Screenshot on Failure", type = "image/png")
     public byte[] saveScreenshot(byte[] screenshot) {
+        return screenshot;
+    }
+
+    @Attachment(value = "📸 Screenshot on Failure", type = "image/png")
+    public byte[] attachScreenshot(byte[] screenshot) {
         return screenshot;
     }
 
@@ -134,4 +134,6 @@ public class TestListener implements ITestListener {
     public void onFinish(ITestContext context) {
         System.out.println("Suite finished: " + context.getName());
     }
+
+
 }
