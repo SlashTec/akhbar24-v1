@@ -1,5 +1,6 @@
 package com.akhbar24.utils;
 
+import io.qameta.allure.Allure;
 import io.qameta.allure.Attachment;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.OutputType;
@@ -8,10 +9,7 @@ import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -28,6 +26,7 @@ public class TestListener implements ITestListener {
         System.out.println("Test Passed: " + result.getName());
     }
 
+
     @Override
     public void onTestFailure(ITestResult result) {
         try {
@@ -36,33 +35,32 @@ public class TestListener implements ITestListener {
                 return;
             }
 
-            // ✅ رقم الـ Build (إن وجد من Jenkins)
+            // 📁 تحديد رقم الـ Build من Jenkins (أو "manual" إذا شغّلت محليًا)
             String buildNumber = System.getenv("BUILD_NUMBER");
             if (buildNumber == null) buildNumber = "manual";
 
-            // ✅ إنشاء مجلد وحفظ الصورة محليًا
             String timestamp = new SimpleDateFormat("HHmmss").format(new Date());
             File screenshotsDir = new File("screenshots/" + buildNumber);
             screenshotsDir.mkdirs();
 
+            // 📸 التقاط صورة وحفظها على القرص
             File srcFile = ((TakesScreenshot) BaseTest.driver).getScreenshotAs(OutputType.FILE);
             File destFile = new File(screenshotsDir, "FAILED_" + result.getName() + "_" + timestamp + ".png");
             FileUtils.copyFile(srcFile, destFile);
             System.out.println("📸 Screenshot saved at: " + destFile.getAbsolutePath());
 
-            // ✅ إرفاق الصورة داخل تقرير Allure
+            // ✅ إرفاق الصورة في Allure (بطريقتين حسب الحاجة)
             byte[] screenshotBytes = ((TakesScreenshot) BaseTest.driver).getScreenshotAs(OutputType.BYTES);
-            attachScreenshot(screenshotBytes);
+            attachScreenshot(screenshotBytes); // باستخدام @Attachment
+            Allure.addAttachment("📸 Screenshot File", new FileInputStream(destFile)); // باستخدام Allure API
 
-            // ✅ إرفاق Stack Trace داخل Allure
+            // ✅ إرفاق Stack Trace في Allure
             saveStackTrace(result.getThrowable());
 
         } catch (Exception e) {
-            System.err.println("❌ Error while taking screenshot: " + e.getMessage());
+            System.err.println("❌ Error while taking screenshot or attaching: " + e.getMessage());
         }
     }
-
-
 
 
     @Attachment(value = "📄 Stack Trace", type = "text/plain")
