@@ -22,7 +22,7 @@ public class BaseTest {
     public static AppiumDriver driver;
 
 
-    @BeforeClass
+    @BeforeMethod
     public void setUp() throws Exception {
         UiAutomator2Options options = new UiAutomator2Options();
         options.setPlatformName("Android");
@@ -32,26 +32,26 @@ public class BaseTest {
         options.setAppWaitDuration(Duration.ofSeconds(60));
         options.setAutoGrantPermissions(true);
 
-       URL serverURL = new URL("https://0979-82-212-126-176.ngrok-free.app/wd/hub");
-       //URL serverURL = new URL("http://127.0.0.1:4723/wd/hub");
+     URL serverURL = new URL("https://0979-82-212-126-176.ngrok-free.app/wd/hub");
+      //URL serverURL = new URL("http://127.0.0.1:4723/wd/hub");
         System.out.println(" جاري إنشاء الجلسة...");
         driver = new AndroidDriver(serverURL, options);
         System.out.println(" تم إنشاء الجلسة بنجاح: " + driver.getSessionId());
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
     }
 
-    @AfterClass
-    public void tearDown() {
-        if (driver != null) {
-            driver.quit();
-            System.out.println(" تم إنهاء الجلسة.");
-        }
-    }
+
 
     public static WebElement waitForElement(By locator) {
         return new WebDriverWait(driver, Duration.ofSeconds(20))
                 .until(ExpectedConditions.visibilityOfElementLocated(locator));
     }
+    @AfterMethod
+    public void tearDown(ITestResult result) {
+        if (driver != null) {
+            driver.quit();
+            System.out.println("🛑 تم إنهاء جلسة Appium بعد هذا الاختبار.");
+        }}
 
 
 

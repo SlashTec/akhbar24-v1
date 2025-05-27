@@ -2,6 +2,7 @@ package com.akhbar24.tests;
 
 import com.akhbar24.utils.BaseTest;
 import io.appium.java_client.AppiumBy;
+import io.appium.java_client.android.AndroidDriver;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -24,6 +25,8 @@ public class ContactUsTest extends BaseTest {
         openContactUsPage();
         fillContactForm("Asseel", "asilyacoub1@gmail.com", "Test", "رسالة تجريبية");
 
+        hideKeyboardIfVisible();
+
         waitForElement(AppiumBy.accessibilityId("إرسال")).click();
         Thread.sleep(2000);
 
@@ -39,6 +42,9 @@ public class ContactUsTest extends BaseTest {
         openContactUsPage();
         fillContactForm("", "asilyacoub1@gmail.com", "Test", "رسالة لحالات الاختبار ");
 
+        hideKeyboardIfVisible();
+
+
         waitForElement(AppiumBy.accessibilityId("إرسال")).click();
         Thread.sleep(2000);
 
@@ -48,11 +54,15 @@ public class ContactUsTest extends BaseTest {
         );
     }
 
-    // ❌ 3. حالة بريد إلكتروني غير صحيح
+     //✅ 3. حالة بريد إلكتروني غير صحيح
     @Test
     public void testContactUsInvalidEmail() throws InterruptedException {
         openContactUsPage();
         fillContactForm("Asseel", "asseel@gmail", "Test", "رسالة تجريبية لحالات الاختبار ");
+
+        // ⌨️ إغلاق الكيبورد قبل الضغط على زر الإرسال
+        hideKeyboardIfVisible();
+
 
         waitForElement(AppiumBy.accessibilityId("إرسال")).click();
         Thread.sleep(2000);
@@ -97,5 +107,14 @@ public class ContactUsTest extends BaseTest {
             return true;
         }
         return false;
+    }
+    public void hideKeyboardIfVisible() {
+        try {
+            if (driver instanceof AndroidDriver) {
+                ((AndroidDriver) driver).hideKeyboard();
+            }
+        } catch (Exception e) {
+            System.out.println("⌨️ لا يوجد كيبورد ظاهر لإخفائه.");
+        }
     }
 }
