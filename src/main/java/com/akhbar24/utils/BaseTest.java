@@ -27,7 +27,7 @@ public class BaseTest {
         options.setPlatformName("Android");
         options.setDeviceName("Pixel 7a");
         options.setAutomationName("UiAutomator2");
-        options.setApp("C:\\Users\\user\\Downloads\\app-release.apk");
+        options.setApp("C:\\Users\\user\\Downloads\\app-releaseak.apk");
         options.setAppWaitDuration(Duration.ofSeconds(60));
         options.setAutoGrantPermissions(true);
 
