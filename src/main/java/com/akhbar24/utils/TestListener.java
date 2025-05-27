@@ -34,23 +34,29 @@ public class TestListener implements ITestListener {
                 return;
             }
 
+            // حفظ الصورة في مجلد screenshots (اختياري للرجوع يدويًا)
             File srcFile = ((TakesScreenshot) BaseTest.driver).getScreenshotAs(OutputType.FILE);
             String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
             File screenshotsDir = new File("screenshots/" + timestamp);
-            if (!screenshotsDir.exists()) {
-                screenshotsDir.mkdirs();
-            }
-
+            screenshotsDir.mkdirs();
             File destFile = new File(screenshotsDir, "FAILED_" + result.getName() + ".png");
             FileUtils.copyFile(srcFile, destFile);
 
-            System.out.println("Screenshot saved at: " + destFile.getAbsolutePath());
-            attachScreenshot(destFile);
+            System.out.println("📸 Screenshot saved at: " + destFile.getAbsolutePath());
+
+            // إرسال الصورة إلى Allure
+            attachScreenshot(((TakesScreenshot) BaseTest.driver).getScreenshotAs(OutputType.BYTES));
 
         } catch (Exception e) {
-            System.err.println("Error while taking screenshot: " + e.getMessage());
+            System.err.println("❌ Error while taking screenshot: " + e.getMessage());
         }
     }
+
+    @Attachment(value = "📸 Screenshot on Failure", type = "image/png")
+    public byte[] attachScreenshot(byte[] screenshotBytes) {
+        return screenshotBytes;
+    }
+
 
     @Attachment(value = "Screenshot", type = "image/png")
     public byte[] attachScreenshot(File file) throws IOException {
