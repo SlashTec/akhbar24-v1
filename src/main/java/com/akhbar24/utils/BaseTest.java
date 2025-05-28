@@ -36,8 +36,8 @@ public class BaseTest {
 
 
 
-       URL serverURL = new URL(" https://86d5-82-212-126-176.ngrok-free.app/wd/hub");
-        //URL serverURL = new URL("http://127.0.0.1:4723/wd/hub");
+     //  URL serverURL = new URL(" https://86d5-82-212-126-176.ngrok-free.app/wd/hub");
+        URL serverURL = new URL("http://127.0.0.1:4723/wd/hub");
         System.out.println(" جاري إنشاء الجلسة...");
         driver = new AndroidDriver(serverURL, options);
         System.out.println(" تم إنشاء الجلسة بنجاح: " + driver.getSessionId());
