@@ -26,43 +26,6 @@ public class TestListener implements ITestListener {
         System.out.println("Test Passed: " + result.getName());
     }
 
-
-    @Override
-    public void onTestFailure(ITestResult result) {
-        try {
-            if (BaseTest.driver == null) {
-                System.err.println("Driver is null. Cannot capture screenshot.");
-                return;
-            }
-
-            // 📁 تحديد رقم الـ Build من Jenkins (أو "manual" إذا شغّلت محليًا)
-            String buildNumber = System.getenv("BUILD_NUMBER");
-            if (buildNumber == null) buildNumber = "manual";
-
-            String timestamp = new SimpleDateFormat("HHmmss").format(new Date());
-            File screenshotsDir = new File("screenshots/" + buildNumber);
-            screenshotsDir.mkdirs();
-
-            // 📸 التقاط صورة وحفظها على القرص
-            File srcFile = ((TakesScreenshot) BaseTest.driver).getScreenshotAs(OutputType.FILE);
-            File destFile = new File(screenshotsDir, "FAILED_" + result.getName() + "_" + timestamp + ".png");
-            FileUtils.copyFile(srcFile, destFile);
-            System.out.println("📸 Screenshot saved at: " + destFile.getAbsolutePath());
-
-            // ✅ إرفاق الصورة في Allure (بطريقتين حسب الحاجة)
-            byte[] screenshotBytes = ((TakesScreenshot) BaseTest.driver).getScreenshotAs(OutputType.BYTES);
-            attachScreenshot(screenshotBytes); // باستخدام @Attachment
-            Allure.addAttachment("📸 Screenshot File", new FileInputStream(destFile)); // باستخدام Allure API
-
-            // ✅ إرفاق Stack Trace في Allure
-            saveStackTrace(result.getThrowable());
-
-        } catch (Exception e) {
-            System.err.println("❌ Error while taking screenshot or attaching: " + e.getMessage());
-        }
-    }
-
-
     @Attachment(value = "📄 Stack Trace", type = "text/plain")
     public String saveStackTrace(Throwable throwable) {
         StringWriter sw = new StringWriter();
@@ -70,6 +33,43 @@ public class TestListener implements ITestListener {
         return sw.toString();
     }
 
+
+
+    @Override
+    public void onTestFailure(ITestResult result) {
+        try {
+            if (BaseTest.driver == null) return;
+
+            // حفظ الصورة على الجهاز
+            String buildNumber = System.getenv("BUILD_NUMBER");
+            if (buildNumber == null) buildNumber = "manual";
+
+            String timestamp = new SimpleDateFormat("HHmmss").format(new Date());
+            File screenshotsDir = new File("screenshots/" + buildNumber);
+            screenshotsDir.mkdirs();
+
+            File srcFile = ((TakesScreenshot) BaseTest.driver).getScreenshotAs(OutputType.FILE);
+            File destFile = new File(screenshotsDir, "FAILED_" + result.getName() + "_" + timestamp + ".png");
+            FileUtils.copyFile(srcFile, destFile);
+
+            // تحويل الصورة إلى byte[]
+            byte[] screenshotBytes = ((TakesScreenshot) BaseTest.driver).getScreenshotAs(OutputType.BYTES);
+
+            // ✅ إرفاقها باستخدام Allure lifecycle manual API
+            Allure.getLifecycle().addAttachment(
+                    "📸 Screenshot",
+                    "image/png",
+                    "png",
+                    screenshotBytes
+            );
+
+            // ✅ Stack trace
+            saveStackTrace(result.getThrowable());
+
+        } catch (Exception e) {
+            System.err.println("❌ Error while capturing/attaching screenshot: " + e.getMessage());
+        }
+    }
 
 
 

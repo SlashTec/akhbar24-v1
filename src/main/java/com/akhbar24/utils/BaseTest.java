@@ -27,7 +27,7 @@ public class BaseTest {
         options.setPlatformName("Android");
         options.setDeviceName("Pixel 7a");
         options.setAutomationName("UiAutomator2");
-        options.setApp("C:\\Users\\user\\Downloads\\app-releaseak.apk");
+        options.setApp("C:\\Users\\user\\Downloads\\app-release (6).apk");
         options.setAppWaitDuration(Duration.ofSeconds(60));
         options.setAutoGrantPermissions(true);
         options.setCapability("uiautomator2ServerLaunchTimeout", 60000); // 60 ثانية
@@ -36,8 +36,8 @@ public class BaseTest {
 
 
 
-         URL serverURL = new URL("https://0979-82-212-126-176.ngrok-free.app/wd/hub");
-       // URL serverURL = new URL("http://127.0.0.1:4723/wd/hub");
+       URL serverURL = new URL(" https://86d5-82-212-126-176.ngrok-free.app/wd/hub");
+        //URL serverURL = new URL("http://127.0.0.1:4723/wd/hub");
         System.out.println(" جاري إنشاء الجلسة...");
         driver = new AndroidDriver(serverURL, options);
         System.out.println(" تم إنشاء الجلسة بنجاح: " + driver.getSessionId());
