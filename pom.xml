@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.akhbar24</groupId>
-  <artifactId>akhbar24-v1</artifactId>
+  <artifactId>akhbar24-v1-main</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
