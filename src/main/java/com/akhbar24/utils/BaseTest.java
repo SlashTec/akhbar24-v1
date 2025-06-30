@@ -32,11 +32,11 @@ public class BaseTest {
         options.setAutoGrantPermissions(true);
         options.setCapability("uiautomator2ServerLaunchTimeout", 60000); // 60 ثانية
         options.setCapability("adbExecTimeout", 60000);
-        options.setCapability("appWaitDuration", 60000);
 
 
 
-      URL serverURL = new URL(" https://86d5-82-212-126-176.ngrok-free.app/wd/hub");
+
+      URL serverURL = new URL("https://299c-2a01-9700-3129-d501-78d2-cad8-c3d1-f256.ngrok-free.app");
        // URL serverURL = new URL("http://127.0.0.1:4723/wd/hub");
         System.out.println(" جاري إنشاء الجلسة...");
         driver = new AndroidDriver(serverURL, options);
